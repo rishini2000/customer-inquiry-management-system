@@ -10,6 +10,8 @@ function App() {
   //   () => sessionStorage.getItem('staffToken') || ''
   // );
 
+  const [activePage, setActivePage] = useState('dashboard');
+
   const [token, setToken] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -226,51 +228,73 @@ function App() {
   }
 
 
-    
-if (!token) {
-  return (
-    <div className="login-page">
-      <form className="login-card" onSubmit={handleLogin}>
-        <div className="brand-icon">CI</div>
-        <h1>Welcome to InquiryDesk</h1>
-        <p>Sign in to manage customer inquiries.</p>
 
-        <label htmlFor="username">Staff username</label>
-        <input
-          id="username"
-          type="text"
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
-          autoComplete="username"
-          required
-        />
 
-        <label htmlFor="password">Password</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          autoComplete="current-password"
-          required
-        />
+  if (!token) {
+    return (
+      <div className="login-page">
+        <div className="login-decoration login-decoration-one" />
+        <div className="login-decoration login-decoration-two" />
 
-        {loginError && (
-          <p className="error-message">{loginError}</p>
-        )}
+        <section className="login-card">
+          <div className="login-brand">
+            <div className="brand-icon">CI</div>
+            <span>InquiryDesk</span>
+          </div>
 
-        <button
-          type="submit"
-          className="primary-button"
-          disabled={loggingIn}
-        >
-          {loggingIn ? 'Signing in...' : 'Sign in'}
-        </button>
-      </form>
-    </div>
-  );
-}
+          <div className="login-heading">
+            <p className="eyebrow">CUSTOMER SUPPORT PORTAL</p>
+            <h1>Welcome back!</h1>
+            <p>Sign in to manage customer inquiries.</p>
+          </div>
 
+          <form onSubmit={handleLogin} className="login-form">
+            <label htmlFor="username">Staff username</label>
+            <input
+              id="username"
+              type="text"
+              placeholder="Enter your username"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              autoComplete="username"
+              required
+            />
+
+            <label htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              autoComplete="current-password"
+              required
+            />
+
+            {loginError && (
+              <p className="error-message" role="alert">
+                {loginError}
+              </p>
+            )}
+
+            <button
+              type="submit"
+              className="primary-button login-submit"
+              disabled={loggingIn}
+            >
+              {loggingIn ? 'Signing in...' : 'Sign in to your account →'}
+            </button>
+          </form>
+
+          <div className="login-decoration-footer">
+            <span>🔒</span> Secure staff access
+            <span>•</span>
+            <span>InquiryDesk Management</span>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="app-layout">
@@ -284,8 +308,23 @@ if (!token) {
         </div>
 
         <p className="nav-heading">WORKSPACE</p>
-        <div className="nav-item active">▦ &nbsp; Dashboard</div>
-        <div className="nav-item">▤ &nbsp; Inquiries</div>
+        <div
+          className={`nav-item ${activePage === 'dashboard' ? 'active' : ''}`}
+          onClick={() => setActivePage('dashboard')}
+          role="button"
+          tabIndex={0}
+        >
+          ▦ &nbsp; Dashboard
+        </div>
+
+        <div
+          className={`nav-item ${activePage === 'inquiries' ? 'active' : ''}`}
+          onClick={() => setActivePage('inquiries')}
+          role="button"
+          tabIndex={0}
+        >
+          ▤ &nbsp; Inquiries
+        </div>
 
         <div className="sidebar-bottom">
           <div className="avatar">S</div>
@@ -308,9 +347,11 @@ if (!token) {
           <div className="page-heading">
             <div>
               <p className="eyebrow">CUSTOMER SUPPORT</p>
-              <h1>Inquiry Dashboard</h1>
+              <h1>{activePage === 'dashboard' ? 'Inquiry Dashboard' : 'Customer Inquiries'}</h1>
               <p className="subtitle">
-                Manage and track customer inquiries in one place.
+                {activePage === 'dashboard'
+                  ? 'Manage and track customer inquiries in one place.'
+                  : 'Search, filter, and manage all customer inquiries.'}
               </p>
             </div>
             <button
@@ -369,7 +410,8 @@ if (!token) {
             </form>
           )}
 
-          <div className="summary-grid">
+          {activePage === 'dashboard' && (
+  <div className="summary-grid">
             <div className="summary-card">
               <div className="summary-top">
                 <span>Total inquiries</span>
@@ -406,8 +448,10 @@ if (!token) {
               <p>Successfully resolved</p>
             </div>
           </div>
+)}
 
-          <section className="table-card">
+         {activePage === 'inquiries' && (
+  <section className="table-card">
             <div className="table-heading">
               <div>
                 <h2>Customer inquiries</h2>
@@ -498,7 +542,8 @@ if (!token) {
               Inquiries are stored in your PostgreSQL database.
             </div>
           </section>
-        </section>
+      )}
+       </section>
       </main>
     </div>
   );
